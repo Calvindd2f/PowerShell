@@ -16,7 +16,7 @@
 .PARAMETER RightLogo
     Enter URL or UNC path to your desired right-side logo for generated report.
 
-    -RightLogo "https://www.psmpartners.com/wp-content/uploads/2017/10/porcaro-stolarek-mete.png"
+    -RightLogo "https://www.x.x/wp-content/uploads/xxxx/xx/logo.png"
 
 .PARAMETER ReportTitle
     Enter desired title for generated report.
