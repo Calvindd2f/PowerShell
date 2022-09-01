@@ -1,3 +1,11 @@
+# Depreciated, got to calvindd2f/Active-Directory
+# Alternatively, the newer version is in this folder, called JML_L_AD.ps1
+#            #            #            #            #            #
+#            #            #            #            #            #
+#            #            #            #            #            #
+#            #            #            #            #            #            
+#            #            #            #            #            #           
+#            #            #            #            #            #            
 # Function for Date User is Disabled
 Function script:DateEntry() {
 	$Date = [string](Get-Date).Year + '-' + (Get-Date).Month + '-' + (Get-Date).Day
