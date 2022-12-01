@@ -10,20 +10,21 @@
 # powershell -nologo -executionpolicy bypass -file WindowsEnum.ps1 extended
 
 
-param($extended)
+[CmdletBinding()]
+[CmdletBinding()]
+param([Object]$extended)
  
-$lines="------------------------------------------"
-function whost($a) {
-    Write-Host
-    Write-Host -ForegroundColor Green $lines
-    Write-Host -ForegroundColor Green " "$a 
-    Write-Host -ForegroundColor Green $lines
+$lines='------------------------------------------'
+function script:whost([Object]$a) {
+    Write-Verbose -Message $lines
+    Write-Verbose -Message ' ' 
+    Write-Verbose -Message $lines
 }
 
 
-whost "Windows Enumeration Script v 0.1
+whost -a 'Windows Enumeration Script v 0.1
           CB
-       c@lvin.ie"
+       c@lvin.ie'
 
 $standard_commands = [ordered]@{
 
@@ -61,42 +62,37 @@ $standard_commands = [ordered]@{
 
 $extended_commands = [ordered]@{
 
-    'Searching for Unattend and Sysprep files' = 'Get-Childitem –Path C:\ -Include *unattend*,*sysprep* -File -Recurse -ErrorAction SilentlyContinue | where {($_.Name -like "*.xml" -or $_.Name -like "*.txt" -or $_.Name -like "*.ini")} | Out-File C:\temp\unattendfiles.txt';
-    'Searching for web.config files'           = 'Get-Childitem –Path C:\ -Include web.config -File -Recurse -ErrorAction SilentlyContinue | Out-File C:\temp\webconfigfiles.txt';
-    'Searching for other interesting files'    = 'Get-Childitem –Path C:\ -Include *password*,*cred*,*vnc* -File -Recurse -ErrorAction SilentlyContinue | Out-File C:\temp\otherfiles.txt';
-    'Searching for various config files'       = 'Get-Childitem –Path C:\ -Include php.ini,httpd.conf,httpd-xampp.conf,my.ini,my.cnf -File -Recurse -ErrorAction SilentlyContinue | Out-File C:\temp\configfiles.txt'
+    'Searching for Unattend and Sysprep files' = 'Get-Childitem -Path C:\ -Include *unattend*,*sysprep* -File -Recurse -ErrorAction SilentlyContinue | where {($_.Name -like "*.xml" -or $_.Name -like "*.txt" -or $_.Name -like "*.ini")} | Out-File C:\temp\unattendfiles.txt';
+    'Searching for web.config files'           = 'Get-Childitem -Path C:\ -Include web.config -File -Recurse -ErrorAction SilentlyContinue | Out-File C:\temp\webconfigfiles.txt';
+    'Searching for other interesting files'    = 'Get-Childitem -Path C:\ -Include *password*,*cred*,*vnc* -File -Recurse -ErrorAction SilentlyContinue | Out-File C:\temp\otherfiles.txt';
+    'Searching for various config files'       = 'Get-Childitem -Path C:\ -Include php.ini,httpd.conf,httpd-xampp.conf,my.ini,my.cnf -File -Recurse -ErrorAction SilentlyContinue | Out-File C:\temp\configfiles.txt'
     'Searching HKLM for passwords'             = 'reg query HKLM /f password /t REG_SZ /s | Out-File C:\temp\hklmpasswords.txt';
     'Searching HKCU for passwords'             = 'reg query HKCU /f password /t REG_SZ /s | Out-File C:\temp\hkcupasswords.txt';
     'Searching for files with passwords'       = 'Get-ChildItem c:\* -include *.xml,*.ini,*.txt,*.config -Recurse -ErrorAction SilentlyContinue | Where-Object {$_.PSPath -notlike "*C:\temp*" -and $_.PSParentPath -notlike "*Reference Assemblies*" -and $_.PSParentPath -notlike "*Windows Kits*"}| Select-String -Pattern "password" | Out-File C:\temp\password.txt';
     
 }
-function RunCommands($commands) {
+function script:RunCommands([Object]$commands) {
     ForEach ($command in $commands.GetEnumerator()) {
-        whost $command.Name
-        Invoke-Expression $command.Value
+        whost -a $command.Name
+        Invoke-Expression -Command $command.Value
     }
 }
 
 
-RunCommands($standard_commands)
+RunCommands -commands ($standard_commands)
 
 if ($extended) {
     if ($extended.ToLower() -eq 'extended') {
-        $result = Test-Path C:\temp
+        $result = Test-Path -Path C:\temp
         if ($result -eq $False) {
-            New-Item C:\temp -type directory
+            New-Item -Path C:\temp -ItemType directory
         }
-        whost "Results writing to C:\temp\
-    This may take a while..."
-        RunCommands($extended_commands)
-        whost "Script Finished! Check your files in C:\temp\"
+        whost -a 'Results writing to C:\temp\
+    This may take a while...'
+        RunCommands -commands ($extended_commands)
+        whost -a 'Script Finished! Check your files in C:\temp\'
     }
 }
 else {
-    whost "Script finished!"
+    whost -a 'Script finished!'
 }
-
-
-
-
-
