@@ -7,21 +7,21 @@
 ##################################################
 
     # Base OU for searching for expired accounts
-    $BaseSearchOU="OU=Users,DC=Domain,DC=Local"
+    $BaseSearchOU='OU=Users,DC=Domain,DC=Local'
 
     # OU that the expired accounts will be moved to
-    $DestinationOU="OU=DisabledUsers,DC=Domain,DC=Local"
+    $DestinationOU='OU=DisabledUsers,DC=Domain,DC=Local'
 
     # Imports the PowerShell AD module **NOTE** RSAT needs to be installed on the system running the script
     if (Get-Module -ListAvailable -Name ActiveDirectory) {
 
-    Import-Module ActiveDirectory
+    Import-Module -Name ActiveDirectory
 
     #  If the module is not available, inform executioner & terminate
     } else {
-    Write-Host "No Active Directory Module found. RSAT tools need to be installed. If you are editing this script on a workstation, try to load the module from Nishang Github" -ForegroundColor Red
+    Write-Verbose -Message 'No Active Directory Module found. RSAT tools need to be installed. If you are editing this script on a workstation, try to load the module from Nishang Github'
 
-    throw "Error"
+    throw 'Error'
     }
 
 
@@ -32,15 +32,13 @@
         Param
         (
             # Specifies minimum password length
-            [Parameter(Mandatory=$false,
-                       ParameterSetName='RandomLength')]
+            [Parameter(ParameterSetName='RandomLength')]
             [ValidateScript({$_ -gt 0})]
             [Alias('Min')] 
             [int]$MinPasswordLength = 12,
             
             # Specifies maximum password length
-            [Parameter(Mandatory=$false,
-                       ParameterSetName='RandomLength')]
+            [Parameter(ParameterSetName='RandomLength')]
             [ValidateScript({
                     if($_ -ge $MinPasswordLength){$true}
                     else{Throw 'Max value cannot be lesser than min value.'}})]
@@ -48,8 +46,7 @@
             [int]$MaxPasswordLength = 20,
     
             # Specifies a fixed password length
-            [Parameter(Mandatory=$false,
-                       ParameterSetName='FixedLength')]
+            [Parameter(ParameterSetName='FixedLength')]
             [ValidateRange(1,2147483647)]
             [int]$PasswordLength = 8,
             
@@ -59,7 +56,7 @@
     
             # Specifies a string containing a character group from which the first character in the password will be generated.
             # Useful for systems which requires first char in password to be alphabetic.
-            [String] $FirstChar,
+            [Parameter(Mandatory=$true)][String] $FirstChar,
             
             # Specifies number of passwords to generate.
             [ValidateRange(1,2147483647)]
@@ -68,7 +65,7 @@
         Begin {
             Function Get-Seed{
                 # Generate a seed for randomization
-                $RandomBytes = New-Object -TypeName 'System.Byte[]' 4
+                $RandomBytes = New-Object -TypeName 'System.Byte[]' -ArgumentList 4
                 $Random = New-Object -TypeName 'System.Security.Cryptography.RNGCryptoServiceProvider'
                 $Random.GetBytes($RandomBytes)
                 [BitConverter]::ToUInt32($RandomBytes, 0)
@@ -147,7 +144,7 @@
                 
                     Else
                    {
-                    Write-Host "There was an issue with disabling $SAM"
+                    Write-Verbose -Message ('There was an issue with disabling {0}' -f $SAM)
                    }                   
                    
     # If there was an issue with disabling the account an error will be displayed in the terminal            
@@ -162,12 +159,12 @@
                     $newpass = New-RandomPa
                    
     # Rest the accounts password with one created by the New-Password function
-                    Set-ADAccountPassword -Identity $user -Reset -NewPassword (ConvertTo-SecureString -AsPlainText $newpass -Force)
+                    Set-ADAccountPassword -Identity $user -Reset -NewPassword (ConvertTo-SecureString -AsPlainText -String $newpass -Force)
 
     # Moves the account to the selected Destination OU        
                     Move-ADObject -Identity $user -TargetPath $DestinationOU
      
     # Outputs the results to the PowerShell terminal        
-                    Write-Host "$SAM was moved to $DestinationOU is the new password of $newpass , copy pasta this, then [Start-ADSyncCycle -Type Delta] if available"                   
+                    Write-Verbose -Message ('{0} was moved to {1} is the new password of {2} , copy pasta this, then [Start-ADSyncCycle -Type Delta] if available' -f $SAM, $DestinationOU, $newpass)                   
                 }
     }
