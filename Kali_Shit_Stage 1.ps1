@@ -15,8 +15,8 @@ Replaced with a simple wsl --install
 #Junk Folder and wsl kernel
 $TemporaryWSL = 'C:\TemporaryWSL'
 $k = https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi
-mkdir 'C:\TemporaryWSL'
-Invoke-WebRequest -Uri $k -OutFile $TemporaryWSL
+mkdir $TemporaryWSL
+Invoke-WebRequest -Uri $k -OutFile $TemporaryWSL\wsl_update_x64.msi
 
 # Setting up second stage
 New-Item -Path C:\TemporaryWSL -Name 'Stage 2.ps1' -ItemType File
