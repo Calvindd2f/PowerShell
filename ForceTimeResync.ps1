@@ -1,4 +1,4 @@
-#requires -RunAsAdministrator
+#requires -RunAsAdministratorhttps://jasoncoltrin.com/2018/08/02/how-to-set-clock-time-on-ad-domain-controller-and-sync-windows-clients/
 
 <#
    .SYNOPSIS
